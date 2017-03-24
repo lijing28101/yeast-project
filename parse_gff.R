@@ -6,17 +6,13 @@ require(docopt)
     parse_gff.R [ -i <input> ] [ -o <output> ] [ -f <feature> ] [ -a <attribute> ]
 
 Options:
-  -i Input GFF file
-  -o Output GFF file
-  -f Feature of gene
-  -a Attributes (comma delimited, e.g. 'ID,Parent'
+  -i Input GFF file  
+  -o Output GFF file [default: /dev/stdout]
+  -f Feature of gene [default: CDS]
+  -a Attributes (comma delimited, e.g. 'ID,Parent') [default: ID,Parent]
 " -> doc
 
 opts <- docopt(doc)
-
-# think about what can go wrong, add tests and messages
-# to make this an R script, Rscript
-# look at the argparse library or docopt (http://docopt.org/)
 
 getAttributeField <- function (x, field, attrsep = ";") {
   regex <- sprintf('.*%s=([^;]+).*', field)
@@ -32,7 +28,6 @@ gffRead <- function(gffFile, nrows = -1) {
      gff = read.table(
        gffFile,
        sep="\t",
-       # as.is=TRUE,
        stringsAsFactors=FALSE,
        quote="",
        header=FALSE,
