@@ -26,14 +26,18 @@ then
    echo "$parse_script does not exist."
 fi
 
-$parse_script -i $input_gff |
+$parse_script -i $input_gff 2> /dev/null |
+   awk ' 
+      BEGIN{FS="\t";OFS="\t"}
+      {$3 = $9" "$7; print}
+   ' |
    bedtools getfasta  \
-       -fi $input_fna  \
-       -bed /dev/stdin \
-       -fo /dev/stdout \
-       -name |
-    sed 's/::.*//' |
-    awk '$1 ~ /^>/ && $1 in seqids { next }; {seqids[$1]++; print}' > $x
+      -fi $input_fna  \
+      -bed /dev/stdin  \
+      -fo /dev/stdout  \
+      -name |
+   sed 's/::.*//' |
+   awk '$1 ~ /^>/ && $1 in seqids { next }; {seqids[$1]++; print}' > $x
 
 cat <(smof grep ' +' $x) \
     <(smof grep ' -' $x | smof reverse -cV | sed 's/|.*//' ) |

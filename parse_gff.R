@@ -1,6 +1,7 @@
 #!/usr/bin/env Rscript
 
-require(docopt)
+library(docopt)
+library(plyr)
 
 "Usage:
     parse_gff.R [ -i <input> ] [ -o <output> ] [ -f <feature> ] [ -a <attribute> ]
@@ -9,7 +10,7 @@ Options:
   -i Input GFF file  
   -o Output GFF file [default: /dev/stdout]
   -f Feature of gene [default: CDS]
-  -a Attributes (comma delimited, e.g. 'ID,Parent') [default: ID,Parent]
+  -a Attributes (comma delimited, e.g. 'ID,Parent') [default: Parent]
 " -> doc
 
 opts <- docopt(doc)
@@ -41,7 +42,7 @@ gffRead <- function(gffFile, nrows = -1) {
           "seqname", "source", "feature", "start", "end",
           "score", "strand", "frame", "attributes")
      cat("found", nrow(gff), "rows with classes:",
-         paste(sapply(gff, class), collapse=", "), "\n")
+         paste(sapply(gff, class), collapse=", "), "\n", file=stderr())
      stopifnot(!any(is.na(gff$start)), !any(is.na(gff$end)))
      return(gff)
 }
@@ -58,6 +59,8 @@ species.gff_F2 <- subset(species.gff_F,select=-(attributes))
 for(a in strsplit(opts$a, ",")[[1]]){
   species.gff_F2[[a]] <- getAttributeField(species.gff_F$attributes,a)
 }
+
+species.gff_F2 <- arrange(species.gff_F2,Parent,start)
 
 write.table(
   species.gff_F2,
