@@ -1,5 +1,7 @@
 #!/bin/bash
 
+module load ncbi-blast
+
 input=$PWD
 output=$PWD/blastout
 mkdir -p $output
@@ -32,8 +34,7 @@ do
    do
       query=$input/faa/$s.faa
       db=$input/database/$m.db/$m.db
-      outfile=$output/$query_$m.txt
-      echo -e "qseqid\tsseqid\tevalue\tbitscore\tqstart\tqend\tsstart\tsend" > $outfile
+      outfile=$output/$s.txt
       blastp \
          -query $query \
          -db $db \
