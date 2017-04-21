@@ -3,5 +3,6 @@
 !*.sh
 !*README*
 !.gitignore
+!*.slurm
 
 *~
